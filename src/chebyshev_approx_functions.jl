@@ -35,11 +35,12 @@ struct ChebPoly{T<:AbstractFloat} # Holds polynomials as well as their first- an
 
 end
 
-struct CApproxPlan{G<:Grid,S<:Integer,T<:AbstractFloat} <: CApproximationPlan
+struct CApproxPlan{G<:Grid,S<:Integer,T<:AbstractFloat,F<:Function} <: CApproximationPlan
 
   grid::G
   order::Union{S,Tuple{Vararg{S}}}
   domain::Union{Array{T,1},Array{T,2}}
+  transform::F
 
 end
 
@@ -366,8 +367,9 @@ function chebyshev_weights(y::AbstractArray{T,N}, plan::P) where {T<:AbstractFlo
   if typeof(plan) <: CApproxPlan
 
     nodes = Array{Array{T,1},1}(undef, length(plan.grid.grid))
+    trans_func = plan.transform
     for i in eachindex(plan.grid.grid)
-      nodes[i] = plan.grid.grid[i].points
+      nodes[i] = trans_func.(plan.grid.grid[i].points)
     end
 
     if eltype(plan.grid.grid) <: ChebRoots
