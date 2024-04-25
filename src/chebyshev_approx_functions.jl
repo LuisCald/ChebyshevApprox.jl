@@ -40,7 +40,7 @@ struct CApproxPlan{G<:Grid,S<:Integer,T<:AbstractFloat,F<:Function} <: CApproxim
   grid::G
   order::Union{S,Tuple{Vararg{S}}}
   domain::Union{Array{T,1},Array{T,2}}
-  transform::F
+  transform::F # in case you wish to transform the nodes before computing the weights
 
 end
 
@@ -171,6 +171,25 @@ function chebyshev_polynomial(order::S, x::AbstractArray{R,1}) where {S<:Integer
   return poly
 
 end
+# x  = nodes(10, :chebyshev_nodes, [1.0, 0.0])
+# xx = chebyshev_polynomial((6), x.points)
+# y  = zeros(10, 7)
+# for i in 0:6
+#     y[:, i+1] = cos.(i .* acos.(x.points))
+# end
+
+
+# # Looking at the inverse case 
+# x  = nodes(10, :chebyshev_nodes, [1.0, 0.0])
+# x = sort((2/ pi) * acos.(x.points))
+# xx = chebyshev_polynomial((6), x)
+# y  = zeros(10, 7)
+# cos(pi)
+
+# for i in 0:6
+#   y[:, i+1] = cos.(pi/2 * i .* x)
+# end
+
 
 function chebyshev_polynomial(order::S, g::G) where {S<:Integer,G<:Nodes}
 
@@ -367,7 +386,7 @@ function chebyshev_weights(y::AbstractArray{T,N}, plan::P) where {T<:AbstractFlo
   if typeof(plan) <: CApproxPlan
 
     nodes = Array{Array{T,1},1}(undef, length(plan.grid.grid))
-    trans_func = plan.transform
+    trans_func = plan.transform # g⁻¹(x)
     for i in eachindex(plan.grid.grid)
       nodes[i] = trans_func.(plan.grid.grid[i].points)
     end
