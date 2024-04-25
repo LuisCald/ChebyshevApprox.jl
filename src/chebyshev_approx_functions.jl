@@ -388,7 +388,7 @@ function chebyshev_weights(y::AbstractArray{T,N}, plan::P) where {T<:AbstractFlo
     nodes = Array{Array{T,1},1}(undef, length(plan.grid.grid))
     trans_func = plan.transform # g⁻¹(x)
     for i in eachindex(plan.grid.grid)
-      nodes[i] = trans_func.(plan.grid.grid[i].points)
+      nodes[i] = trans_func(plan.grid.grid[i].points)
     end
 
     if eltype(plan.grid.grid) <: ChebRoots
